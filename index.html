@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correio Elegante Especial</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Boogaloo&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reset e Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #CAB399; /* Bege Neutro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- ANIMAÇÃO DAS BANDEIRINHAS (COM FÍSICA DE TECIDO E SOMBRA) --- */
+        .cordao-bandeirinhas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-around;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .bandeira {
+            width: 45px;
+            height: 55px;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 75%, 0% 100%);
+            transform-origin: top center;
+            animation: balanco 3s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            margin-top: -5px;
+            filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.3)); 
+        }
+
+        .bandeira:nth-child(even) {
+            animation-duration: 3.5s;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes balanco {
+            0% { transform: perspective(400px) rotateX(15deg) rotateZ(-12deg) skewX(-5deg); }
+            100% { transform: perspective(400px) rotateX(-5deg) rotateZ(15deg) skewX(5deg); }
+        }
+
+        .b-azul-escuro { background-color: #241A69; }
+        .b-vermelho { background-color: #C80025; }
+        .b-amarelo { background-color: #D1AE00; }
+        .b-verde { background-color: #007F51; }
+        .b-laranja { background-color: #ED6E00; }
+        .b-azul-claro { background-color: #017CD3; }
+
+        /* --- CONTAINER PRINCIPAL --- */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 65px 24px 30px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+            margin-top: 30px;
+        }
+
+        .tela {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        .tela.ativa {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* --- CONTROLES (VOLTAR E AVANÇAR) --- */
+        .btn-controle {
+            position: absolute;
+            top: 15px;
+            width: 34px;
+            height: 34px;
+            border: 2px solid #ffffff !important;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .btn-voltar {
+            left: 15px;
+            background-color: #FA0014;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(250, 0, 20, 0.5);
+        }
+
+        .btn-voltar:hover {
+            box-shadow: 0 0 15px #FA0014, 0 0 25px #FA0014;
+            transform: scale(1.1);
+        }
+
+        .btn-avancar {
+            right: 15px;
+            background-color: #ED6E00;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(237, 110, 0, 0.5);
+        }
+
+        .btn-avancar:hover {
+            box-shadow: 0 0 15px #ED6E00, 0 0 25px #ED6E00;
+            transform: scale(1.1);
+        }
+
+        /* --- TIPOGRAFIA --- */
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-weight: 400;
+            font-size: 1.8rem;
+            color: #E20001;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            min-height: 4.5rem;
+        }
+
+        .texto-longo {
+            font-family: 'Boogaloo', sans-serif;
+            font-size: 1.35rem;
+            line-height: 1.4;
+            text-align: justify;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .texto-inferior {
+            font-family: 'Pacifico', cursive;
+            font-weight: 400;
+            font-size: 1.3rem;
+            color: #F23596;
+            margin-top: auto;
+            margin-bottom: 20px;
+            min-height: 3.5rem;
+            line-height: 1.3;
+        }
+
+        /* --- IMAGENS DA TELA 1 (ACÚMULO) --- */
+        .wrapper-imagem {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .img-meme {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .img-meme.visivel {
+            opacity: 1;
+        }
+
+        /* --- BOTÕES GERAIS E NEON --- */
+        .botoes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .botoes-container.visivel {
+            opacity: 1;
+            pointer-events: auto;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .btn {
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        .btn-primario {
+            background-color: #FA0014;
+            color: white;
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 0 10px rgba(250, 0, 19, 0.4);
+        }
+
+        .btn-primario:hover {
+            box-shadow: 0 0 15px #FA0014, 0 0 25px #FA0014;
+        }
+
+        /* --- MINI-GAME (TELA 3) --- */
+        .btn-dica {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #E20001;
+            color: white;
+            border: 2px solid #ffffff !important;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(226, 0, 1, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
+        .btn-dica:hover {
+            box-shadow: 0 0 15px #E20001, 0 0 25px #E20001;
+            transform: scale(1.1);
+        }
+
+        .code-editor {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            text-align: left;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            line-height: 1.4;
+        }
+
+        .highlight-code { color: #F23596; font-weight: bold; }
+
+        .quiz-container { display: flex; flex-direction: column; gap: 15px; }
+
+        .pergunta-texto { font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+
+        .opcoes-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .btn-opcao {
+            background-color: #F23596;
+            color: white;
+            border: 2px solid transparent;
+            padding: 12px 5px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-opcao:hover { box-shadow: 0 0 12px #F23596; }
+
+        .btn-opcao.selecionada {
+            border-color: white;
+            box-shadow: 0 0 15px #F23596, 0 0 25px #F23596;
+            transform: scale(1.05);
+        }
+
+        .btn-opcao.correta { background-color: #007F51 !important; box-shadow: 0 0 15px #007F51, 0 0 25px #007F51; }
+        .btn-opcao.errada { background-color: #E20001 !important; box-shadow: 0 0 15px #E20001, 0 0 25px #E20001; animation: tremer 0.4s ease-in-out; }
+
+        @keyframes tremer {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        .caixa-dica {
+            display: none;
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            border-left: 5px solid #E20001;
+            animation: fadeIn 0.3s;
+        }
+
+        /* --- BARRA E CONFETES (TELA 4) --- */
+        .wrapper-animacao-final {
+            width: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px 0;
+        }
+
+        .loading-wrapper {
+            width: 100%;
+            height: 35px;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #FA0014;
+            border-radius: 20px;
+            transition: width 0.1s linear;
+        }
+
+        .loading-bar.pulso { animation: pulse-bar-anim 0.6s ease-in-out 3; }
+
+        @keyframes pulse-bar-anim {
+            0% { transform: scale(1); box-shadow: 0 0 10px #FA0014; }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px #FA0014; }
+            100% { transform: scale(1); box-shadow: 0 0 10px #FA0014; }
+        }
+
+        #confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: visible;
+            z-index: 50;
+        }
+
+        .confete {
+            position: absolute;
+            width: 10px;
+            height: 15px;
+            opacity: 0;
+        }
+
+        @keyframes chimneys-explosion {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
+        }
+        @keyframes explosao-confete {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* ==========================================================================
+           NOVOS ELEMENTOS: SLIDESHOW E ANIMAÇÃO DE FLORES
+           ========================================================================== */
+        
+        /* Contenedor do Slideshow das Fotos dela */
+        .wrapper-slideshow {
+            width: 100%;
+            height: 230px;
+            position: relative;
+            margin: 15px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            background-color: #f7f7f7;
+        }
+
+        .img-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        .img-slide.ativa {
+            opacity: 1;
+        }
+
+        /* Estrutura Base das Flores Laterais */
+        .decoracao-flor {
+            position: absolute;
+            bottom: -5px;
+            width: 110px;
+            height: 180px;
+            background-image: url('flor de referencia.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom center;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
+            transform-origin: bottom center;
+            /* Remove a cor branca do fundo da imagem em JPEG */
+            mix-blend-mode: multiply; 
+        }
+
+        .flor-esq {
+            left: -42px;
+            transform: scale(0) rotate(-15deg);
+        }
+
+        .flor-dir {
+            right: -42px;
+            transform: scale(0) scaleX(-1) rotate(-15deg); /* Inverte horizontalmente */
+        }
+
+        /* Gatilho disparado via JavaScript */
+        .animar-flores .flor-esq {
+            animation: crescerFlorEsq 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+        }
+
+        .animar-flores .flor-dir {
+            animation: crescerFlorDir 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+        }
+
+        @keyframes crescerFlorEsq {
+            0% { opacity: 0; transform: scale(0) rotate(-20deg); }
+            100% { opacity: 1; transform: scale(1) rotate(-4deg); }
+        }
+
+        @keyframes crescerFlorDir {
+            0% { opacity: 0; transform: scale(0) scaleX(-1) rotate(-20deg); }
+            100% { opacity: 1; transform: scale(1) scaleX(-1) rotate(-4deg); }
+        }
+    
+    </style>
+    
+</head>
+<body>
+
+    <audio id="musicaRomantica" loop>
+        <source src="musica de fundo\MariposaTraicionera.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="cordao-bandeirinhas">
+        <div class="bandeira b-azul-escuro"></div>
+        <div class="bandeira b-vermelho"></div>
+        <div class="bandeira b-amarelo"></div>
+        <div class="bandeira b-verde"></div>
+        <div class="bandeira b-laranja"></div>
+        <div class="bandeira b-azul-claro"></div>
+        <div class="bandeira b-azul-escuro"></div>
+        <div class="bandeira b-vermelho"></div>
+    </div>
+
+    <div class="container" id="caixaPrincipal">
+        
+        <div class="decoracao-flor flor-esq"></div>
+        <div class="decoracao-flor flor-dir"></div>
+        
+        <button id="btnVoltar" class="btn-controle btn-voltar" onclick="voltarTela()" title="Voltar">&#10094;</button>
+        <button id="btnAvancar" class="btn-controle btn-avancar" onclick="pularEfeitoDigitacao()" title="Avançar texto">▶</button>
+
+        <div id="tela1" class="tela ativa">
+            <h1 id="titulo1"></h1>
+            <div class="wrapper-imagem">
+                <img src="imagens\Copa 2026.jpg" alt="Copa 2026" id="meme1" class="img-meme">
+                <img src="imagens\Garantido meme.jpeg" alt="Festival Parintins 2026" id="meme2" class="img-meme">
+                <img src="imagens\Festa junina.jpg" alt="Festa Junina" id="meme3" class="img-meme">
+                <img src="imagens\aliens 12 de junho.jpg" alt="12 de junho aliens" id="meme4" class="img-meme">
+                <img src="imagens\pspsp Aki 12 de junho.jpg" alt="psps Aki" id="meme5" class="img-meme">
+                <img src="imagens\Snoopy dia dos namorados.jpg" alt="Snoopy 12 de junho" id="meme6" class="img-meme">
+                <img src="imagens\Final de semestre V2.jpg" alt="Final de semestre" id="meme7" class="img-meme">
+                <img src="imagens\He man 2026.jpg" alt="He man" id="meme8" class="img-meme">
+                <img src="imagens\Todo mundo em pânico 6.jpg" alt="Todo mundo em panico 6" id="meme9" class="img-meme">
+                <img src="imagens\Supergirl.jpg" alt="Supergirl" id="meme10" class="img-meme">
+                <img src="imagens\Toy story 5.jpg" alt="Toy story 5" id="meme11" class="img-meme">
+                <img src="imagens\junho 2026.jpeg" alt="Junho 2026" id="meme12" class="img-meme">
+            </div>
+            <p class="texto-inferior" id="subtitulo1"></p>
+            <div class="botoes-container" id="botoesTela1">
+                <button class="btn btn-primario" onclick="irParaTela2()">Conta logo menino, sou ansiosa</button>
+            </div>
+        </div>
+
+        <div id="tela2" class="tela">
+            <p class="texto-longo" id="textoPrincipal2"></p>
+            <p class="texto-inferior" id="subtitulo2"></p>
+            <div class="botoes-container" id="botoesTela2">
+                <button class="btn btn-primario" onclick="irParaTela3()">Criar tradutor binário</button>
+            </div>
+        </div>
+
+        <div id="tela3" class="tela">
+            <button class="btn-dica" id="btnDica" onclick="mostrarDica()">?</button>
+            <h1 style="font-size: 1.4rem; min-height: 2rem;">Complete o código em Python</h1>
+            <div class="code-editor">
+<pre><code id="codigoPython">def traduzir(txt):
+  palavras = txt.<span class="highlight-code">___1___</span>()
+  res = []
+  for p in palavras:
+    if "0" in p or "1" in p:
+      letra = chr(int(p, <span class="highlight-code">___2___</span>))
+      res.<span class="highlight-code">___3___</span>(letra)
+    else:
+      res.append(p)
+  return " ".<span class="highlight-code">___4___</span>(res)
+
+<span class="highlight-code">___5___</span>(traduzir(msg))</code></pre>
+            </div>
+            <div class="quiz-container">
+                <div class="caixa-dica" id="caixaDica"></div>
+                <p class="pergunta-texto" id="perguntaTexto">1. Qual método separa o texto?</p>
+                <div class="opcoes-grade" id="opcoesContainer"></div>
+                <button class="btn btn-primario" id="btnConfirmarQuiz" onclick="confirmarResposta()" style="margin-top: 10px;" disabled>Confirmar</button>
+            </div>
+        </div>
+
+        <div id="tela4" class="tela">
+            
+            <div id="fase1Tela4" style="display:flex; flex-direction:column; justify-content:center; flex-grow:1;">
+                <h1 id="tituloFase1Tela4"></h1>
+                <button id="btnFase1Tela4" class="btn btn-primario" onclick="iniciarCarregamento()" style="margin-top:20px; opacity:0; pointer-events:none;">Claro meu bem 😊</button>
+            </div>
+
+            <div id="fase2Tela4" style="display:none; flex-direction:column; justify-content:center; align-items:center; flex-grow:1;">
+                <h2 style="color:#FA0014; font-size:1.2rem; margin-bottom:10px;">Traduzindo Binários...</h2>
+                <div class="wrapper-animacao-final">
+                    <div class="loading-wrapper">
+                        <div class="loading-bar" id="loadingBar"></div>
+                    </div>
+                    <div id="confetti-container"></div>
+                </div>
+            </div>
+
+            <div id="fase3Tela4" style="display:none; flex-direction:column; flex-grow:1;">
+                <h1 style="font-size: 1.4rem; min-height: 1.5rem; margin-bottom: 5px;">Tradutor Concluído!</h1>
+                
+                <div class="wrapper-slideshow" id="slideshowDestinataria">
+                    <img src="imagens\destinatária\Leticia 1.jpeg" class="img-slide ativa" alt="Foto 1">
+                    <img src="imagens\destinatária\Leticia 2.jpeg" class="img-slide" alt="Foto 2">
+                    <img src="imagens\destinatária\Leticia 3.jpeg" class="img-slide" alt="Foto 3">
+                    <img src="imagens\destinatária\Leticia 4.jpg" class="img-slide" alt="Foto 4">
+                    <img src="imagens\destinatária\Leticia 5.jpg" class="img-slide" alt="Foto 5">
+                </div>
+
+                <p class="texto-longo" id="textoFinalTraduzido" style="min-height: 160px; font-size: 1.25rem; margin-bottom: 10px;"></p>
+                
+                <div class="botoes-container" id="containerBotaoContinuar">
+                    <button class="btn btn-primario" onclick="irParaContinuacao()">Continuar..</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tela5" class="tela">
+            <h1 style="font-size: 1.6rem; min-height: 2rem; margin-bottom: 15px; color: #FA0014;">Letícia, saiba que...</h1>
+            <p class="texto-longo" id="textoContDeclaracao" style="min-height: 280px; font-size: 1.25rem; text-align: justify; color: #4a4a4a;"></p>
+            <div class="botoes-container" id="containerBotaoFinalizar">
+                <button class="btn btn-primario" onclick="voltarAoInicio()">Finalizar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const textos = {
+            titulo1: "Quando tudo resolve acontecer em junho:",
+            subtitulo1: "Mesmo com tudo isso acontecendo ao mesmo tempo, preciso lhe dizer que tem algo que se destaca mais...",
+            textoPrincipal2: "Querida Letícia, acho que é meio obvio, mas.. Eu estou 01101001 01101110 01110100 01100101 01110010 01100101 01110011 01110011 01100001 01100100 01101111 01100001 01110000 01100001 01111000 01101111 01101110 01100001 01100100 01101111 de vc, teu sorriso, teus olhos, seu cabelo ruivo me chamaram a atenção logo de cara, mas isso são as coisas menos interessantes sobre vc, pois é a sua 01110011 01110101 01110000 01100101 01110010 01101001 01101110 01110011, 01110011 01100101 01110010 01101001 01100001 aos estudos, seus ideais em relação a 01110100 01110010 01100001 01101110 01110011 01110011 01110101 01101100 01101110 01110011, suas 01101010 01110101 01101001 01111010 01100101 01110011 politicas e seus gostos para 01100011 01101001 01101110 01100101 01101101 01100001 que me conquistaram cada vez mais, nem a batucada do 01100010 01110101 01101100 01101110 01110110 01100101 01110010 01100100 01100101 01101001 01110010 01101111 mexeu tanto com meu coração quanto vc. Sei que nem sequer saímos uma vez, mas todos os dias eu torço e anseio pelo dia que vamos nos ver para eu te conhecer melhor, mesmo assim, as poucas 01110110 01101001 01110010 01110100 01110101 01100100 01100101 01110011 que eu notei até agora foram as que me fizeram ter tanto interesse em vc, vc é uma 01110010 01100001 01110010 01101001 01100100 01100001 que merece ser 01110100 01110010 01100101 01100001 01100100 01100001 todos os dias, uma 01101101 01110101 01101100 01101008 01100101 01110010 kkk, meu tipo de 01101101 01110101 01101100 01101008 01100101 01110010. Tenho certeza de quando eu te ver pessoalmente meu peito irá pulsar em 01110011 01110101 01110010 e 01100011 01101100 01100001 01110010 01101111.",
+            subtitulo2: "Ehh... droga, parece que algumas palavras se perderam no caminho... desculpa pelo imprevisto, vamos resolver isso",
+            textoTraduzido: "Querida Letícia, acho que é meio obvio, mas.. Eu estou muito afim de vc, teu sorriso, teus olhos, seu cabelo ruivo me chamaram a atenção logo de cara, mas isso são as coisas menos interessantes sobre vc, pois é a sua inteligência, dedicação aos estudos, seus ideais em relação a educação, suas opiniões politicas e seus gostos para filmes que me conquistaram cada vez mais, nem a batucada do boi garantido mexeu tanto com meu coração quanto vc. Sei que nem sequer saímos uma vez, mas todos os dias eu torço e anseio pelo dia que vamos nos ver para eu te conhecer melhor, mesmo assim, as poucas qualidades que eu notei até agora foram as que me fizeram ter tanto interesse em vc, vc é uma joia rara que merece ser valorizada todos os dias, uma partidona kkk, meu tipo de garota ideal. Tenho certeza de quando eu te ver pessoalmente meu peito irá pulsar em vermelho e branco ❤️🤍.",
+            textoContinuacao: "Eu sei que vc está em um relacionamento sério com o seu curso, sei o quanto vc está focada nos seus objetivos, suas metas, estágios, seminários, TCC,  e tá tudo bem se vc não estiver interessada no momento, de verdade... eu sempre vou desejar seu bem e desejar que vc  conquiste todos os seus sonhos, eu vou estar acompanhando daqui seus sonhos se tornarem realidade, estarei te admirando a distância e cheio de orgulho como sempre, estarei falando bem de qualquer trabalho que vc estiver envolvida profissionalmente para todos que eu conheço, mas se vc me der uma chance... vc verá todo o meu apoio de perto, verá meu lado nerd se sentindo confortável perto de vc, vai descobrir que mesmo vc estando ocupada, estarei sempre checando meu celular só pro caso de vc mandar uma msg que alegre meu dia, saberá que mesmo eu vendo vc raramente, ainda sim, continuará a ser a minha idealização perfeita de mulher. Então.. o que vc achou ? Não se preocupe,  leve o tempo que for necessário para pensar a respeito, não irei apressar pra ter uma resposta, sou paciente 😉, eu sou grato só por vc tirar um tempinho pra ver esse site meu bem ❤️"
+        };
+
+        let telaAtualId = 1;
+        let telasVisitadas = { 1: false, 2: false, 3: false, 4: false, 5: false };
+        let timersAtivos = [];
+        let intervaloSlideshow;
+
+        function limparTimers() {
+            timersAtivos.forEach(t => clearTimeout(t));
+            timersAtivos = [];
+        }
+
+        function meuSetTimeout(callback, delay) {
+            let t = setTimeout(() => {
+                callback();
+                timersAtivos = timersAtivos.filter(id => id !== t);
+            }, delay);
+            timersAtivos.push(t);
+            return t;
+        }
+
+        function digitarTexto(elementoId, texto, velocidade, callback) {
+            let i = 0;
+            const elemento = document.getElementById(elementoId);
+            elemento.innerHTML = "";
+            document.getElementById("btnAvancar").style.display = "flex"; 
+            
+            function escrever() {
+                if (i < texto.length) {
+                    elemento.innerHTML += texto.charAt(i);
+                    i++;
+                    meuSetTimeout(escrever, velocidade);
+                } else {
+                    document.getElementById("btnAvancar").style.display = "none";
+                    if (callback) callback();
+                }
+            }
+            escrever();
+        }
+
+        function pularEfeitoDigitacao() {
+            limparTimers();
+            document.getElementById("btnAvancar").style.display = "none";
+            
+            if (telaAtualId === 1) {
+                document.getElementById("titulo1").innerHTML = textos.titulo1;
+                document.getElementById("subtitulo1").innerHTML = textos.subtitulo1;
+                for (let i = 1; i <= 12; i++) {
+                    document.getElementById(`meme${i}`).classList.remove("visivel");
+                }
+                document.getElementById("meme12").classList.add("visivel");
+                document.getElementById("botoesTela1").classList.add("visivel");
+            }
+            else if (telaAtualId === 2) {
+                document.getElementById("textoPrincipal2").innerHTML = textos.textoPrincipal2;
+                document.getElementById("subtitulo2").innerHTML = textos.subtitulo2;
+                document.getElementById("botoesTela2").classList.add("visivel");
+            }
+            else if (telaAtualId === 4) {
+                if (document.getElementById("fase1Tela4").style.display !== "none") {
+                    document.getElementById("tituloFase1Tela4").innerHTML = "Pronta para traduzir a declaração e anexá-la ao código?";
+                    const btn = document.getElementById("btnFase1Tela4");
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                } else if (document.getElementById("fase3Tela4").style.display !== "none") {
+                    document.getElementById("textoFinalTraduzido").innerHTML = textos.textoTraduzido;
+                    document.getElementById("containerBotaoContinuar").classList.add("visivel");
+                }
+            }
+            else if (telaAtualId === 5) {
+                document.getElementById("textoContDeclaracao").innerHTML = textos.textoContinuacao;
+                document.getElementById("containerBotaoFinalizar").classList.add("visivel");
+            }
+        }
+
+        function mudarExibicaoTela(id) {
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+            document.getElementById(`tela${id}`).classList.add('ativa');
+            telaAtualId = id;
+            
+            // Gerencia visibilidade do botão voltar
+            if (id === 1 || id === 5) {
+                document.getElementById("btnVoltar").style.display = "none";
+            } else {
+                document.getElementById("btnVoltar").style.display = "flex";
+            }
+            
+            limparTimers();
+            document.getElementById("btnAvancar").style.display = "none";
+        }
+
+        function voltarTela() {
+            if (telaAtualId > 1 && telaAtualId < 5) {
+                if (intervaloSlideshow) clearInterval(intervaloSlideshow);
+                let telaAnterior = telaAtualId - 1;
+                mudarExibicaoTela(telaAnterior);
+                pularEfeitoDigitacao();
+            }
+        }
+
+        window.onload = function() {
+            iniciarTela1();
+        };
+
+        function iniciarTela1() {
+            mudarExibicaoTela(1);
+            if(telasVisitadas[1]) { pularEfeitoDigitacao(); return; }
+            telasVisitadas[1] = true;
+
+            digitarTexto("titulo1", textos.titulo1, 50, function() {
+                document.getElementById("btnAvancar").style.display = "flex";
+
+                const totalImagens = 12;
+                const tempoExibicao = 2000;
+
+                meuSetTimeout(() => {
+                    document.getElementById("meme1").classList.add("visivel");
+                }, 500);
+
+                for (let i = 2; i <= totalImagens; i++) {
+                    meuSetTimeout(() => {
+                        document.getElementById(`meme${i-1}`).classList.remove("visivel");
+                        document.getElementById(`meme${i}`).classList.add("visivel");
+                    }, 500 + (i - 1) * tempoExibicao);
+                }
+
+                let tempoTotalImagens = 500 + (totalImagens - 1) * tempoExibicao;
+                
+                meuSetTimeout(() => {
+                    digitarTexto("subtitulo1", textos.subtitulo1, 40, function() {
+                        document.getElementById("botoesTela1").classList.add("visivel");
+                    });
+                }, tempoTotalImagens);
+            });
+        }
+
+        function irParaTela2() {
+            mudarExibicaoTela(2);
+            if(telasVisitadas[2]) { pularEfeitoDigitacao(); return; }
+            telasVisitadas[2] = true;
+
+            digitarTexto("textoPrincipal2", textos.textoPrincipal2, 20, function() {
+                document.getElementById("btnAvancar").style.display = "flex";
+                digitarTexto("subtitulo2", textos.subtitulo2, 30, function(){
+                    document.getElementById("botoesTela2").classList.add("visivel");
+                });
+            });
+        }
+
+        let perguntaAtual = 0;
+        let opcaoSelecionada = null;
+        let respostasDadas = ["___1___", "___2___", "___3___", "___4___", "___5___"];
+        
+        const bancoDePerguntas = [
+            { pergunta: "1. Qual método usamos no Python para separar um texto em palavras?", opcoes: ["split", "cut", "slice", "break"], correta: "split", dica: "Dica: O nome desse método em inglês também é uma jogada no boliche quando os pinos se 'separam'." },
+            { pergunta: "2. O sistema binário utiliza apenas zeros e uns. Qual é a base numérica dessa conversão?", opcoes: ["10", "16", "2", "8"], correta: "2", dica: "Dica: Se binário usa 0 e 1, quantos números diferentes existem na base dele?" },
+            { pergunta: "3. Qual método adiciona um novo item ao final de uma lista vazia no Python?", opcoes: ["insert", "push", "add", "append"], correta: "append", dica: "Dica: Lembra da palavra 'apêndice', algo que se adiciona ao final." },
+            { pergunta: "4. Qual método usamos para juntar (colar) uma lista de palavras de volta em um texto único?", opcoes: ["concat", "join", "merge", "bind"], correta: "join", dica: "Dica: Em inglês, se você quer se 'juntar' a um grupo, você dá um ____ nele." },
+            { pergunta: "5. Qual o comando principal para exibir/imprimir o resultado final na tela?", opcoes: ["print", "show", "echo", "display"], correta: "print", dica: "Dica: Se fossemos 'imprimir' esse texto no papel..." }
+        ];
+
+        function irParaTela3() {
+            mudarExibicaoTela(3);
+            if(!telasVisitadas[3]) {
+                telasVisitadas[3] = true;
+                carregarPergunta();
+            }
+        }
+
+        function atualizarCodigoVisor() {
+            document.getElementById('codigoPython').innerHTML = `def traduzir(txt):
+  palavras = txt.<span class="highlight-code">${respostasDadas[0]}</span>()
+  res = []
+  for p in palavras:
+    if "0" in p or "1" in p:
+      letra = chr(int(p, <span class="highlight-code">${respostasDadas[1]}</span>))
+      res.<span class="highlight-code">${respostasDadas[2]}</span>(letra)
+    else:
+      res.append(p)
+  return " ".<span class="highlight-code">${respostasDadas[3]}</span>(res)
+
+<span class="highlight-code">${respostasDadas[4]}</span>(traduzir(msg))`;
+        }
+
+        function carregarPergunta() {
+            if (perguntaAtual >= bancoDePerguntas.length) {
+                irParaTela4();
+                return;
+            }
+
+            opcaoSelecionada = null;
+            document.getElementById("btnConfirmarQuiz").disabled = true;
+            document.getElementById("caixaDica").style.display = "none";
+            
+            const q = bancoDePerguntas[perguntaAtual];
+            document.getElementById("perguntaTexto").innerText = q.pergunta;
+
+            const opcoesEmbaralhadas = [...q.opcoes].sort(() => Math.random() - 0.5);
+            const container = document.getElementById("opcoesContainer");
+            container.innerHTML = ""; 
+
+            opcoesEmbaralhadas.forEach(opcao => {
+                const btn = document.createElement("button");
+                btn.className = "btn-opcao";
+                btn.innerText = opcao;
+                btn.onclick = () => selecionarOpcao(btn, opcao);
+                container.appendChild(btn);
+            });
+        }
+
+        function selecionarOpcao(btnClicado, valor) {
+            document.querySelectorAll(".btn-opcao").forEach(b => b.classList.remove("selecionada"));
+            btnClicado.classList.add("selecionada");
+            opcaoSelecionada = valor;
+            document.getElementById("btnConfirmarQuiz").disabled = false;
+        }
+
+        function mostrarDica() {
+            const caixaDica = document.getElementById("caixaDica");
+            caixaDica.innerText = bancoDePerguntas[perguntaAtual].dica;
+            caixaDica.style.display = "block";
+        }
+
+        function confirmarResposta() {
+            const q = bancoDePerguntas[perguntaAtual];
+            const botoes = document.querySelectorAll(".btn-opcao");
+            let botaoSelecionado;
+
+            botoes.forEach(b => { if (b.classList.contains("selecionada")) botaoSelecionado = b; });
+
+            if (opcaoSelecionada === q.correta) {
+                botaoSelecionado.classList.add("correta");
+                document.getElementById("btnConfirmarQuiz").disabled = true;
+                
+                respostasDadas[perguntaAtual] = q.correta;
+                atualizarCodigoVisor();
+
+                setTimeout(() => { perguntaAtual++; carregarPergunta(); }, 1200);
+
+            } else {
+                botaoSelecionado.classList.add("errada");
+                const caixaDica = document.getElementById("caixaDica");
+                caixaDica.innerHTML = `<strong>Opa, deu erro de sintaxe!</strong><br>${q.dica}`;
+                caixaDica.style.display = "block";
+
+                setTimeout(() => {
+                    botaoSelecionado.classList.remove("errada", "selecionada");
+                    document.getElementById("btnConfirmarQuiz").disabled = true;
+                    opcaoSelecionada = null;
+                }, 1000);
+            }
+        }
+
+        function irParaTela4() {
+            mudarExibicaoTela(4);
+            document.getElementById("fase1Tela4").style.display = "flex";
+            document.getElementById("fase2Tela4").style.display = "none";
+            document.getElementById("fase3Tela4").style.display = "none";
+            
+            if(telasVisitadas[4]) { pularEfeitoDigitacao(); return; }
+            telasVisitadas[4] = true;
+
+            digitarTexto("tituloFase1Tela4", "Pronta para traduzir a declaração e anexá-la ao código?", 50, function() {
+                const btn = document.getElementById("btnFase1Tela4");
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+                btn.style.animation = "fadeIn 0.8s forwards";
+            });
+        }
+
+        function iniciarCarregamento() {
+            // ---> A MÚSICA COMEÇA AQUI PARA BURLAR O BLOQUEIO DO NAVEGADOR <---
+            const musica = document.getElementById("musicaRomantica");
+            if (musica) {
+                musica.play().catch(e => console.log("Erro ao tocar música:", e));
+            }
+
+            document.getElementById("fase1Tela4").style.display = "none";
+            document.getElementById("fase2Tela4").style.display = "flex";
+            document.getElementById("btnVoltar").style.display = "none";
+
+            let loadingBar = document.getElementById("loadingBar");
+            let progresso = 0;
+
+            let intervalo = setInterval(() => {
+                progresso += 2;
+                loadingBar.style.width = progresso + "%";
+
+                if (progresso >= 100) {
+                    clearInterval(intervalo);
+                    loadingBar.classList.add("pulso");
+                    dispararConfetes();
+
+                    setTimeout(() => {
+                        mostrarResultadoFinal();
+                    }, 2500); 
+                }
+            }, 50);
+        }
+
+        function dispararConfetes() {
+            const container = document.getElementById("confetti-container");
+            container.innerHTML = "";
+            const cores = ['#FA0014', '#FFFFFF']; 
+            
+            for (let i = 0; i < 120; i++) {
+                let confete = document.createElement("div");
+                confete.classList.add("confete");
+                confete.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                
+                let spawnX = Math.random() * 100;
+                confete.style.left = `${spawnX}%`;
+                confete.style.top = `50%`; 
+                
+                let tx = (Math.random() - 0.5) * 800; 
+                let ty = (Math.random() - 0.5) * 800; 
+                
+                confete.style.setProperty('--tx', `${tx}px`);
+                confete.style.setProperty('--ty', `${ty}px`);
+                
+                confete.style.animation = `explosao-confete ${1 + Math.random() * 1.5}s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+                
+                container.appendChild(confete);
+            }
+        }
+
+        /* --- CONTROLE DO SLIDESHOW EM LOOP --- */
+        function startSlideshow() {
+            const slides = document.querySelectorAll("#slideshowDestinataria .img-slide");
+            let slideAtual = 0;
+            if(slides.length <= 1) return;
+
+            intervaloSlideshow = setInterval(() => {
+                slides[slideAtual].classList.remove("ativa");
+                slideAtual = (slideAtual + 1) % slides.length;
+                slides[slideAtual].classList.add("ativa");
+            }, 3500); // Altera a foto a cada 3.5 segundos
+        }
+
+        function mostrarResultadoFinal() {
+            // Linha do play removida daqui!
+            document.getElementById("fase2Tela4").style.display = "none";
+            document.getElementById("fase3Tela4").style.display = "flex";
+            document.getElementById("btnVoltar").style.display = "flex";
+
+            // Ativa o crescimento das flores laterais
+            document.getElementById("caixaPrincipal").classList.add("animar-flores");
+            
+            // Inicia o loop suave das fotos dela
+            startSlideshow();
+
+            // Digitação do texto principal traduzido
+            digitarTexto("textoFinalTraduzido", textos.textoTraduzido, 65, function(){
+                document.getElementById("containerBotaoContinuar").classList.add("visivel");
+            });
+        }
+
+        /* --- MIGRAR PARA A TELA DE CONTINUAÇÃO --- */
+        function irParaContinuacao() {
+            mudarExibicaoTela(5);
+            if(telasVisitadas[5]) { pularEfeitoDigitacao(); return; }
+            telasVisitadas[5] = true;
+
+            // O efeito de máquina de escrever reproduz o texto romântico na mesma velocidade (65ms)
+            digitarTexto("textoContDeclaracao", textos.textoContinuacao, 65, function(){
+                document.getElementById("containerBotaoFinalizar").classList.add("visivel");
+            });
+        }
+
+        /* --- FUNÇÃO PARA FINALIZAR E VOLTAR AO INÍCIO --- */
+        function voltarAoInicio() {
+            // Limpa o loop do slideshow de fotos para evitar vazamento de memória
+            if (intervaloSlideshow) clearInterval(intervaloSlideshow);
+
+            // Pausa a música e volta o tempo dela para o início
+            const musica = document.getElementById("musicaRomantica");
+            if (musica) {
+                musica.pause();
+                musica.currentTime = 0;
+            }
+
+            // Recarrega a página para resetar todos os status, textos e animações
+            window.location.reload(); 
+        }
+    </script>
+</body>
+</html>
