@@ -407,7 +407,7 @@
         @keyframes fadeIn { to { opacity: 1; } }
 
         /* ==========================================================================
-           NOVOS ELEMENTOS: SLIDESHOW E ANIMAÇÃO DE FLORES
+           NOVOS ELEMENTOS: SLIDESHOW E ANIMAÇÃO DE FLORES (UNIFICADO)
            ========================================================================== */
         
         /* Contenedor do Slideshow das Fotos dela */
@@ -437,51 +437,154 @@
             opacity: 1;
         }
 
-        /* Estrutura Base das Flores Laterais */
-        .decoracao-flor {
+        /* ===== CUSTOMIZAÇÃO RÁPIDA DA ROSA (VARIÁVEIS CORES) ===== */
+        :root {
+            --rosa-clara: #ff6b9d;
+            --rosa-media: #e83e8c;
+            --rosa-escura: #b8186a;
+            --verde-caule: #2d7a3e;
+            --amarelo-miolo: #f7d046;
+        }
+
+        /* ESTRUTURA CONTAINER DA ROSA */
+        .rosa-wrapper {
             position: absolute;
             bottom: -5px;
-            width: 110px;
-            height: 180px;
-            background-image: url('flor de referencia.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: bottom center;
-            z-index: 5;
+            width: 120px;
+            height: 320px;
+            z-index: -1; /* -1 garante que renderize ATRÁS da caixa branca do container */
             pointer-events: none;
             opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        /* Localização das Rosas fora das bordas laterais */
+        .rosa-esq {
+            left: -85px; /* Controla o afastamento da esquerda */
+        }
+
+        .rosa-dir {
+            right: -85px; /* Controla o afastamento da direita */
+            transform: scaleX(-1); /* Inverte horizontalmente */
+        }
+
+        /* GATILHO DE ATIVAÇÃO GERAL (Controlado por herança do .animar-flores) */
+        .animar-flores .rosa-wrapper { 
+            opacity: 1; 
+        }
+        .animar-flores .rosa-wrapper * { 
+            animation-play-state: running !important; 
+        }
+
+        /* CAULE - Retângulo que cresce verticalmente */
+        .caule {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 6px;
+            height: 220px;
+            background: linear-gradient(to top, #1f5a2c, var(--verde-caule));
+            border-radius: 3px;
+            transform: translateX(-50%) scaleY(0);
             transform-origin: bottom center;
-            /* Remove a cor branca do fundo da imagem em JPEG */
-            mix-blend-mode: multiply; 
+            animation: crescerCaule 1.2s ease-out forwards;
+            animation-play-state: paused;
         }
 
-        .flor-esq {
-            left: -42px;
-            transform: scale(0) rotate(-15deg);
+        /* FOLHAS - Brotam de forma escalonada nas laterais */
+        .folha {
+            position: absolute;
+            bottom: 90px;
+            width: 40px;
+            height: 18px;
+            background: var(--verde-caule);
+            border-radius: 100% 0 100% 0;
+            transform: scale(0);
+            opacity: 0;
+            animation-play-state: paused;
+        }
+        .folha-esq {
+            left: calc(50% - 38px);
+            transform-origin: right center;
+            animation: abrirFolha 0.7s ease-out 1.0s forwards;
+        }
+        .folha-dir {
+            left: 50%;
+            border-radius: 0 100% 0 100%;
+            transform-origin: left center;
+            animation: abrirFolha 0.7s ease-out 1.2s forwards;
         }
 
-        .flor-dir {
-            right: -42px;
-            transform: scale(0) scaleX(-1) rotate(-15deg); /* Inverte horizontalmente */
+        /* FLOR - Base de suporte para as pétalas */
+        .flor {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            transform: translateX(-50%) scale(0);
+            transform-origin: center center;
+            animation: surgirFlor 0.6s ease-out 1.5s forwards;
+            animation-play-state: paused;
         }
 
-        /* Gatilho disparado via JavaScript */
-        .animar-flores .flor-esq {
-            animation: crescerFlorEsq 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+        /* PÉTALAS - Configuração geométrica do desabrochar */
+        .petala {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 36px;
+            height: 50px;
+            background: radial-gradient(ellipse at 50% 100%, var(--rosa-escura), var(--rosa-clara));
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            transform: translate(-50%, -50%) rotate(0deg) translateY(0) scale(0);
+            transform-origin: center center;
+            opacity: 0;
+            animation-play-state: paused;
         }
 
-        .animar-flores .flor-dir {
-            animation: crescerFlorDir 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+        .p1 { animation: desabrochar 0.8s ease-out 1.8s forwards; --ang:   0deg; }
+        .p2 { animation: desabrochar 0.8s ease-out 1.95s forwards; --ang:  72deg; }
+        .p3 { animation: desabrochar 0.8s ease-out 2.10s forwards; --ang: 144deg; }
+        .p4 { animation: desabrochar 0.8s ease-out 2.25s forwards; --ang: 216deg; }
+        .p5 { animation: desabrochar 0.8s ease-out 2.40s forwards; --ang: 288deg; }
+
+        /* MIOLO - Círculo central iluminado */
+        .miolo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle, #fff2a0, var(--amarelo-miolo));
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            box-shadow: 0 0 8px rgba(247, 208, 70, 0.6);
+            animation: surgirMiolo 0.6s ease-out 2.8s forwards;
+            animation-play-state: paused;
         }
 
-        @keyframes crescerFlorEsq {
-            0% { opacity: 0; transform: scale(0) rotate(-20deg); }
-            100% { opacity: 1; transform: scale(1) rotate(-4deg); }
+        /* ===== KEYFRAMES DA ROSA VETORIAL ===== */
+        @keyframes crescerCaule {
+            0%   { transform: translateX(-50%) scaleY(0); }
+            100% { transform: translateX(-50%) scaleY(1); }
         }
-
-        @keyframes crescerFlorDir {
-            0% { opacity: 0; transform: scale(0) scaleX(-1) rotate(-20deg); }
-            100% { opacity: 1; transform: scale(1) scaleX(-1) rotate(-4deg); }
+        @keyframes abrirFolha {
+            0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+        }
+        @keyframes surgirFlor {
+            0%   { transform: translateX(-50%) scale(0); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        @keyframes desabrochar {
+            0%   { transform: translate(-50%, -50%) rotate(var(--ang)) translateY(0)   scale(0);   opacity: 0; }
+            60%  { opacity: 1; }
+            100% { transform: translate(-50%, -50%) rotate(var(--ang)) translateY(-22px) scale(1);  opacity: 1; }
+        }
+        @keyframes surgirMiolo {
+            0%   { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
     
     </style>
@@ -490,7 +593,7 @@
 <body>
 
     <audio id="musicaRomantica" loop>
-        <source src="musica de fundo\MariposaTraicionera.mp3" type="audio/mpeg">
+        <source src="musica de fundo/mariposa.mp3" type="audio/mpeg">
     </audio>
 
     <div class="cordao-bandeirinhas">
@@ -506,8 +609,35 @@
 
     <div class="container" id="caixaPrincipal">
         
-        <div class="decoracao-flor flor-esq"></div>
-        <div class="decoracao-flor flor-dir"></div>
+        <!-- Estrutura da Rosa Esquerda Vetorial -->
+        <div class="rosa-wrapper rosa-esq">
+            <div class="caule"></div>
+            <div class="folha folha-esq"></div>
+            <div class="folha folha-dir"></div>
+            <div class="flor">
+                <div class="petala p1"></div>
+                <div class="petala p2"></div>
+                <div class="petala p3"></div>
+                <div class="petala p4"></div>
+                <div class="petala p5"></div>
+                <div class="miolo"></div>
+            </div>
+        </div>
+
+        <!-- Estrutura da Rosa Direita Vetorial (Espelhada) -->
+        <div class="rosa-wrapper rosa-dir">
+            <div class="caule"></div>
+            <div class="folha folha-esq"></div>
+            <div class="folha folha-dir"></div>
+            <div class="flor">
+                <div class="petala p1"></div>
+                <div class="petala p2"></div>
+                <div class="petala p3"></div>
+                <div class="petala p4"></div>
+                <div class="petala p5"></div>
+                <div class="miolo"></div>
+            </div>
+        </div>
         
         <button id="btnVoltar" class="btn-controle btn-voltar" onclick="voltarTela()" title="Voltar">&#10094;</button>
         <button id="btnAvancar" class="btn-controle btn-avancar" onclick="pularEfeitoDigitacao()" title="Avançar texto">▶</button>
@@ -617,7 +747,7 @@
         const textos = {
             titulo1: "Quando tudo resolve acontecer em junho:",
             subtitulo1: "Mesmo com tudo isso acontecendo ao mesmo tempo, preciso lhe dizer que tem algo que se destaca mais...",
-            textoPrincipal2: "Querida Letícia, acho que é meio obvio, mas.. Eu estou 01101001 01101110 01110100 01100101 01110010 01100101 01110011 01110011 01100001 01100100 01101111 01100001 01110000 01100001 01111000 01101111 01101110 01100001 01100100 01101111 de vc, teu sorriso, teus olhos, seu cabelo ruivo me chamaram a atenção logo de cara, mas isso são as coisas menos interessantes sobre vc, pois é a sua 01110011 01110101 01110000 01100101 01110010 01101001 01101110 01110011, 01110011 01100101 01110010 01101001 01100001 aos estudos, seus ideais em relação a 01110100 01110010 01100001 01101110 01110011 01110011 01110101 01101100 01101110 01110011, suas 01101010 01110101 01101001 01111010 01100101 01110011 politicas e seus gostos para 01100011 01101001 01101110 01100101 01101101 01100001 que me conquistaram cada vez mais, nem a batucada do 01100010 01110101 01101100 01101110 01110110 01100101 01110010 01100100 01100101 01101001 01110010 01101111 mexeu tanto com meu coração quanto vc. Sei que nem sequer saímos uma vez, mas todos os dias eu torço e anseio pelo dia que vamos nos ver para eu te conhecer melhor, mesmo assim, as poucas 01110110 01101001 01110010 01110100 01110101 01100100 01100101 01110011 que eu notei até agora foram as que me fizeram ter tanto interesse em vc, vc é uma 01110010 01100001 01110010 01101001 01100100 01100001 que merece ser 01110100 01110010 01100101 01100001 01100100 01100001 todos os dias, uma 01101101 01110101 01101100 01101008 01100101 01110010 kkk, meu tipo de 01101101 01110101 01101100 01101008 01100101 01110010. Tenho certeza de quando eu te ver pessoalmente meu peito irá pulsar em 01110011 01110101 01110010 e 01100011 01101100 01100001 01110010 01101111.",
+            textoPrincipal2: "Querida Letícia, acho que é meio obvio, mas.. Eu estou 01101001 01101110 01110100 01100101 01110010 01100101 01110011 01110011 01100001 01100100 01101111 01100001 01110000 01100001 01111000 01101111 01101110 01100001 01100100 01101111 de vc, teu sorriso, teus olhos, seu cabelo ruivo me chamaram a atenção logo de cara, mas isso são as coisas menos interessantes sobre vc, pois é a sua 01110011 01110101 01110000 01100101 01110010 01101001 01101110 01110000, 01110011 01100101 01110010 01101001 01100001 aos estudos, seus ideais em relação a 01110100 01110010 01100001 01101110 01110011 01110011 01110101 01101100 01101110 01110011, suas 01101010 01110101 01101001 01111010 01100101 01110011 politicas e seus gostos para 01100011 01101001 01101110 01100101 01101101 01100001 que me conquistaram cada vez mais, nem a batucada do 01100010 01110101 01101100 01101110 01110110 01100101 01110010 01100100 01100101 01101001 01110010 01101111 mexeu tanto com meu coração quanto vc. Sei que nem sequer saímos uma vez, mas todos os dias eu torço e anseio pelo dia que vamos nos ver para eu te conhecer melhor, mesmo assim, as poucas 01110110 01101001 01110010 01110100 01110101 01100100 01100101 01110011 que eu notei até agora foram as que me fizeram ter tanto interesse em vc, vc é uma 01110010 01100001 01110010 01101001 01100100 01100001 que merece ser 01110100 01110010 01100101 01100001 01100100 01100001 todos os dias, uma 01101101 01110101 01101100 01101008 01100101 01110010 kkk, meu tipo de 01101101 01110101 01101100 01101008 01100101 01110010. Tenho certeza de quando eu te ver pessoalmente meu peito irá pulsar em 01110011 01110101 e 01100011 01101100 01100001 01110010 01101111.",
             subtitulo2: "Ehh... droga, parece que algumas palavras se perderam no caminho... desculpa pelo imprevisto, vamos resolver isso",
             textoTraduzido: "Querida Letícia, acho que é meio obvio, mas.. Eu estou muito afim de vc, teu sorriso, teus olhos, seu cabelo ruivo me chamaram a atenção logo de cara, mas isso são as coisas menos interessantes sobre vc, pois é a sua inteligência, dedicação aos estudos, seus ideais em relação a educação, suas opiniões politicas e seus gostos para filmes que me conquistaram cada vez mais, nem a batucada do boi garantido mexeu tanto com meu coração quanto vc. Sei que nem sequer saímos uma vez, mas todos os dias eu torço e anseio pelo dia que vamos nos ver para eu te conhecer melhor, mesmo assim, as poucas qualidades que eu notei até agora foram as que me fizeram ter tanto interesse em vc, vc é uma joia rara que merece ser valorizada todos os dias, uma partidona kkk, meu tipo de garota ideal. Tenho certeza de quando eu te ver pessoalmente meu peito irá pulsar em vermelho e branco ❤️🤍.",
             textoContinuacao: "Eu sei que vc está em um relacionamento sério com o seu curso, sei o quanto vc está focada nos seus objetivos, suas metas, estágios, seminários, TCC,  e tá tudo bem se vc não estiver interessada no momento, de verdade... eu sempre vou desejar seu bem e desejar que vc  conquiste todos os seus sonhos, eu vou estar acompanhando daqui seus sonhos se tornarem realidade, estarei te admirando a distância e cheio de orgulho como sempre, estarei falando bem de qualquer trabalho que vc estiver envolvida profissionalmente para todos que eu conheço, mas se vc me der uma chance... vc verá todo o meu apoio de perto, verá meu lado nerd se sentindo confortável perto de vc, vai descobrir que mesmo vc estando ocupada, estarei sempre checando meu celular só pro caso de vc mandar uma msg que alegre meu dia, saberá que mesmo eu vendo vc raramente, ainda sim, continuará a ser a minha idealização perfeita de mulher. Então.. o que vc achou ? Não se preocupe,  leve o tempo que for necessário para pensar a respeito, não irei apressar pra ter uma resposta, sou paciente 😉, eu sou grato só por vc tirar um tempinho pra ver esse site meu bem ❤️"
@@ -892,7 +1022,6 @@
         }
 
         function iniciarCarregamento() {
-            // ---> A MÚSICA COMEÇA AQUI PARA BURLAR O BLOQUEIO DO NAVEGADOR <---
             const musica = document.getElementById("musicaRomantica");
             if (musica) {
                 musica.play().catch(e => console.log("Erro ao tocar música:", e));
@@ -957,16 +1086,15 @@
                 slides[slideAtual].classList.remove("ativa");
                 slideAtual = (slideAtual + 1) % slides.length;
                 slides[slideAtual].classList.add("ativa");
-            }, 3500); // Altera a foto a cada 3.5 segundos
+            }, 3500);
         }
 
         function mostrarResultadoFinal() {
-            // Linha do play removida daqui!
             document.getElementById("fase2Tela4").style.display = "none";
             document.getElementById("fase3Tela4").style.display = "flex";
             document.getElementById("btnVoltar").style.display = "flex";
 
-            // Ativa o crescimento das flores laterais
+            // Ativa o crescimento das flores laterais vetoriais
             document.getElementById("caixaPrincipal").classList.add("animar-flores");
             
             // Inicia o loop suave das fotos dela
@@ -984,7 +1112,6 @@
             if(telasVisitadas[5]) { pularEfeitoDigitacao(); return; }
             telasVisitadas[5] = true;
 
-            // O efeito de máquina de escrever reproduz o texto romântico na mesma velocidade (65ms)
             digitarTexto("textoContDeclaracao", textos.textoContinuacao, 65, function(){
                 document.getElementById("containerBotaoFinalizar").classList.add("visivel");
             });
@@ -992,17 +1119,14 @@
 
         /* --- FUNÇÃO PARA FINALIZAR E VOLTAR AO INÍCIO --- */
         function voltarAoInicio() {
-            // Limpa o loop do slideshow de fotos para evitar vazamento de memória
             if (intervaloSlideshow) clearInterval(intervaloSlideshow);
 
-            // Pausa a música e volta o tempo dela para o início
             const musica = document.getElementById("musicaRomantica");
             if (musica) {
                 musica.pause();
                 musica.currentTime = 0;
             }
 
-            // Recarrega a página para resetar todos os status, textos e animações
             window.location.reload(); 
         }
     </script>
